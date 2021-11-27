@@ -14,6 +14,7 @@ def rand_mask(num_filters, num_channels, weights_per_kernel = 4, dtype = tf.floa
     mask = np.zeros((3, 3, num_channels, num_filters))
     for f in range(num_filters):
         for c in range(num_channels):
+            
             mask[1, 1, c, f] = 9./weights_per_kernel
             ks = np.random.permutation(len(choices))
             for k in ks[:weights_per_kernel-1]: 
