@@ -75,7 +75,7 @@ if __name__ == "__main__":
 
     history = model.fit(train_dataset, epochs = max_epochs, 
                     validation_data=test_dataset, callbacks = make_cbs(name),verbose=1,
-                    steps_per_epoch=1, validation_steps= 1)
+                    )
 
     np.save(f'{name}_history.npy', history.history)
 
