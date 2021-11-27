@@ -8,6 +8,7 @@ import resnet50
 from IregConv2D import IregConv2D
 import datetime
 import os
+import sys
 
 def get_dataset(batch_size, is_training=True):
     split = 'train' if is_training else 'test'
@@ -28,13 +29,15 @@ def get_dataset(batch_size, is_training=True):
 
 
 if __name__ == "__main__":
+
     batch_size = 128
     max_epochs = 164
+    init_lr = .1
 
     def make_cbs(name: str):
         logdir = os.path.join("logs", name, datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
         def schedule(epoch, lr):
-            if epoch <= 1:
+            if epoch < 1:
                 return 0.01
             elif epoch < 82:
                 return 0.1
@@ -54,28 +57,26 @@ if __name__ == "__main__":
 
     train_dataset = get_dataset(batch_size, is_training=True)
     test_dataset = get_dataset(batch_size, is_training=False)
-
-    base_model = resnet50.ResNet50([32, 32, 3], 
-                    classes = 10,
-                    reg = regularizers.L2(0.0001),
-                    )
-    test_model = resnet50.ResNet50([32, 32, 3], 
+    if len(sys.argv) > 1:
+        conv = IregConv2D
+        name = 'Ireg'
+    else: 
+        conv = Conv2D
+        name = 'Reg'
+    
+    model = resnet50.ResNet50([32, 32, 3], 
                     classes = 10, 
                     reg = regularizers.L2(0.0001),
-                    Conv2D=IregConv2D)
-
-    test_model.compile(loss='sparse_categorical_crossentropy', 
+                    Conv2D=conv)
+    print("conv type", name)
+    model.compile(loss='sparse_categorical_crossentropy',
             optimizer=Adam(init_lr),
             metrics=['accuracy'],
             )
 
-    base_model.compile(loss='sparse_categorical_crossentropy',
-            optimizer=Adam(init_lr),
-            metrics=['accuracy'],
-            )
+    history = model.fit(train_dataset, epochs = max_epochs, 
+                    validation_data=test_dataset, callbacks = make_cbs(name),verbose=1,
+                    steps_per_epoch= 390)
 
-    hist_test = test_model.fit(train_dataset, epochs = max_epochs, 
-                    validation_data=test_dataset,callbacks = make_cbs('iregular'),verbose=1)
+    np.save(f'{name}_history.npy', history.history)
 
-    hist_base = base_model.fit(train_dataset, epochs = max_epochs, 
-                    validation_data=test_dataset,callbacks = make_cbs('regular'),verbose=1)
