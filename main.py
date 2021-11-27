@@ -37,7 +37,7 @@ if __name__ == "__main__":
     def make_cbs(name: str):
         logdir = os.path.join("logs", name, datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
         def schedule(epoch, lr):
-            if epoch < 1:
+            if epoch < 2:
                 return 0.01
             elif epoch < 82:
                 return 0.1
