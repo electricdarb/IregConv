@@ -5,7 +5,8 @@ from tensorflow.keras import models
 Conv2D_ = Conv2D
     
 class IdentityBlock(tf.keras.Model):
-    def __init__(self, kernel_size, filters, stage, block, Conv2D = Conv2D):
+    def __init__(self, kernel_size, filters, stage, block, Conv2D = Conv2D,
+     reg = tf.keras.regularizers.L2(0.0001)):
         """The identity block is the block that has no conv layer at shortcut.
         # Arguments
             input_tensor: input tensor
@@ -29,18 +30,18 @@ class IdentityBlock(tf.keras.Model):
 
         self.conv1 = Conv2D_(filters1, (1, 1),
                         kernel_initializer='he_normal',
-                        name=conv_name_base + '2a')
+                        name=conv_name_base + '2a', kernel_regularizer=reg)
         self.bn1 = BatchNormalization(name=bn_name_base + '2a')
 
         self.conv2 = Conv2D(filters2, kernel_size,
                         padding='same',
                         kernel_initializer='he_normal',
-                        name=conv_name_base + '2b') 
+                        name=conv_name_base + '2b', kernel_regularizer=reg) 
         self.bn2 = BatchNormalization(name=bn_name_base + '2b')
 
         self.conv3 = Conv2D_(filters3, (1, 1),
                         kernel_initializer='he_normal',
-                        name=conv_name_base + '2c')
+                        name=conv_name_base + '2c', kernel_regularizer=reg)
         self.bn3 = BatchNormalization(name=bn_name_base + '2c')
     
     def call(self, input_tensor):
@@ -66,7 +67,9 @@ class ConvBlock(tf.keras.Model):
                 filters,
                 stage,
                 block,
-                strides=(2, 2), Conv2D = Conv2D):
+                strides=(2, 2), 
+                Conv2D = Conv2D,
+                reg = tf.keras.regularizers.L2(0.0001)):
         """A block that has a conv layer at shortcut.
         # Arguments
             input_tensor: input tensor
@@ -97,22 +100,22 @@ class ConvBlock(tf.keras.Model):
 
         self.conv1 = Conv2D_(filters1, (1, 1), strides=strides,
                         kernel_initializer='he_normal',
-                        name=conv_name_base + '2a')
+                        name=conv_name_base + '2a',  kernel_regularizer=reg)
         self.bn1 = BatchNormalization(name=bn_name_base + '2a')
 
         self.conv2 = Conv2D(filters2, kernel_size, padding='same',
                         kernel_initializer='he_normal',
-                        name=conv_name_base + '2b')
+                        name=conv_name_base + '2b',  kernel_regularizer=reg)
         self.bn2 = BatchNormalization(name=bn_name_base + '2b')
 
         self.conv3 = Conv2D_(filters3, (1, 1),
                         kernel_initializer='he_normal',
-                        name=conv_name_base + '2c')
+                        name=conv_name_base + '2c', kernel_regularizer=reg)
         self.bn3 = BatchNormalization(name=bn_name_base + '2c')
 
         self.conv4 =  Conv2D_(filters3, (1, 1), strides=strides,
                                 kernel_initializer='he_normal',
-                                name=conv_name_base + '1')
+                                name=conv_name_base + '1', kernel_regularizer=reg)
         self.bn4 = BatchNormalization(name=bn_name_base + '1')
 
     def call(self, input_tensor):
@@ -134,7 +137,7 @@ class ConvBlock(tf.keras.Model):
         x = Activation('relu')(x)
         return x
 
-def ResNet50(input_shape, Conv2D = Conv2D_, classes = 10):
+def ResNet50(input_shape, Conv2D = Conv2D_, classes = 10, reg = tf.keras.regularizers.L2(0.0001)):
     # Determine proper input shape
 
     input_tensor = Input(shape = input_shape)
@@ -144,34 +147,34 @@ def ResNet50(input_shape, Conv2D = Conv2D_, classes = 10):
                     strides=(2, 2),
                     padding='valid',
                     kernel_initializer='he_normal',
-                    name='conv1')(x)
+                    name='conv1',  kernel_regularizer=reg)(x)
     x = BatchNormalization(name='bn_conv1')(x)
     x = Activation('relu')(x)
     x = ZeroPadding2D(padding=(1, 1), name='pool1_pad')(x)
     x = MaxPooling2D((3, 3), strides=(2, 2))(x)
 
-    x = ConvBlock(3, [64, 64, 256], stage=2, block='a', strides=(1, 1), Conv2D = Conv2D)(x)
-    x = IdentityBlock(3, [64, 64, 256], stage=2, block='b', Conv2D = Conv2D)(x)
-    x = IdentityBlock(3, [64, 64, 256], stage=2, block='c', Conv2D = Conv2D)(x)
+    x = ConvBlock(3, [64, 64, 256], stage=2, block='a', strides=(1, 1), Conv2D = Conv2D, reg = reg)(x)
+    x = IdentityBlock(3, [64, 64, 256], stage=2, block='b', Conv2D = Conv2D, reg = reg)(x)
+    x = IdentityBlock(3, [64, 64, 256], stage=2, block='c', Conv2D = Conv2D, reg = reg)(x)
 
-    x = ConvBlock(3, [128, 128, 512], stage=3, block='a', Conv2D = Conv2D)(x)
-    x = IdentityBlock(3, [128, 128, 512], stage=3, block='b', Conv2D = Conv2D)(x)
-    x = IdentityBlock(3, [128, 128, 512], stage=3, block='c', Conv2D = Conv2D)(x)
-    x = IdentityBlock(3, [128, 128, 512], stage=3, block='d', Conv2D = Conv2D)(x)
+    x = ConvBlock(3, [128, 128, 512], stage=3, block='a', Conv2D = Conv2D, reg = reg)(x)
+    x = IdentityBlock(3, [128, 128, 512], stage=3, block='b', Conv2D = Conv2D, reg = reg)(x)
+    x = IdentityBlock(3, [128, 128, 512], stage=3, block='c', Conv2D = Conv2D, reg = reg)(x)
+    x = IdentityBlock(3, [128, 128, 512], stage=3, block='d', Conv2D = Conv2D, reg = reg)(x)
 
-    x = ConvBlock(3, [256, 256, 1024], stage=4, block='a', Conv2D = Conv2D)(x)
-    x = IdentityBlock(3, [256, 256, 1024], stage=4, block='b', Conv2D = Conv2D)(x)
-    x = IdentityBlock(3, [256, 256, 1024], stage=4, block='c', Conv2D = Conv2D)(x)
-    x = IdentityBlock(3, [256, 256, 1024], stage=4, block='d', Conv2D = Conv2D)(x)
-    x = IdentityBlock(3, [256, 256, 1024], stage=4, block='e', Conv2D = Conv2D)(x)
-    x = IdentityBlock(3, [256, 256, 1024], stage=4, block='f', Conv2D = Conv2D)(x)
+    x = ConvBlock(3, [256, 256, 1024], stage=4, block='a', Conv2D = Conv2D, reg = reg)(x)
+    x = IdentityBlock(3, [256, 256, 1024], stage=4, block='b', Conv2D = Conv2D, reg = reg)(x)
+    x = IdentityBlock(3, [256, 256, 1024], stage=4, block='c', Conv2D = Conv2D, reg = reg)(x)
+    x = IdentityBlock(3, [256, 256, 1024], stage=4, block='d', Conv2D = Conv2D, reg = reg)(x)
+    x = IdentityBlock(3, [256, 256, 1024], stage=4, block='e', Conv2D = Conv2D, reg = reg)(x)
+    x = IdentityBlock(3, [256, 256, 1024], stage=4, block='f', Conv2D = Conv2D, reg = reg)(x)
 
-    x = ConvBlock(3, [512, 512, 2048], stage=5, block='a', Conv2D = Conv2D)(x)
-    x = IdentityBlock(3, [512, 512, 2048], stage=5, block='b', Conv2D = Conv2D)(x)
-    x = IdentityBlock(3, [512, 512, 2048], stage=5, block='c', Conv2D = Conv2D)(x)
+    x = ConvBlock(3, [512, 512, 2048], stage=5, block='a', Conv2D = Conv2D, reg = reg)(x)
+    x = IdentityBlock(3, [512, 512, 2048], stage=5, block='b', Conv2D = Conv2D, reg = reg)(x)
+    x = IdentityBlock(3, [512, 512, 2048], stage=5, block='c', Conv2D = Conv2D, reg = reg)(x)
 
     x = GlobalAveragePooling2D(name='avg_pool')(x)
-    y = Dense(classes, activation='softmax', name='fc1000')(x)
+    y = Dense(classes, activation='softmax', name='fc1000', kernel_regularizer=reg)(x)
 
     model = models.Model(inputs=input_tensor, outputs=y, name="ResNet50")
     return model
