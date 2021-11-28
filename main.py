@@ -21,9 +21,13 @@ def get_dataset(batch_size, is_training=True):
 
     dataset = dataset.map(scale)
 
+    def augmentor(image, label):
+        padded_image = tf.image.pad_to_bounding_box(image, 4, 4, 40, 40)
+        return tf.image.random_crop(padded_image, (32, 32, 3)), label
+
     if is_training:
+        dataset = dataset.map(augmentor)
         dataset = dataset.shuffle(50000)
-    
 
     dataset = dataset.batch(batch_size)
     dataset = dataset.repeat()
