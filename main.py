@@ -44,7 +44,7 @@ if __name__ == "__main__":
         logdir = os.path.join("logs", name, datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
         def schedule(epoch, lr):
             if epoch < 2:
-                return 0.01
+                return 0.1
             elif epoch < 82:
                 return 0.1
             elif epoch < 123:
@@ -76,7 +76,7 @@ if __name__ == "__main__":
                     Conv2D=conv)
     print("conv type", name)
     model.compile(loss='sparse_categorical_crossentropy',
-            optimizer=Adam(init_lr),
+            optimizer=SGD(init_lr, 0.9),
             metrics=['accuracy'],
             )
 
