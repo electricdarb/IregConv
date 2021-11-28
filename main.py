@@ -12,8 +12,8 @@ import sys
 
 def get_dataset(batch_size, is_training=True):
     split = 'train' if is_training else 'test'
-    dataset, info = tfds.load(name='cifar10', split=split, with_info=True, as_supervised=True, try_gcs=True)
-    # Normalize the input data.
+    dataset, info = tfds.load(name='cifar10', split=split, with_info=True, as_supervised=True, try_gcs=True,  shuffle_files=True)
+    # Normalize the input data
     def scale(image, label):
         image = tf.cast(image, tf.float32)
         image /= 255.0
@@ -22,9 +22,11 @@ def get_dataset(batch_size, is_training=True):
     dataset = dataset.map(scale)
 
     if is_training:
-        dataset = dataset.shuffle(10000)
+        dataset = dataset.shuffle(50000)
+    
 
     dataset = dataset.batch(batch_size)
+    dataset = datatset.repeat()
     return dataset
 
 
@@ -76,6 +78,7 @@ if __name__ == "__main__":
 
     history = model.fit(train_dataset, epochs = max_epochs, 
                     validation_data=test_dataset, callbacks = make_cbs(name),verbose=1,
+                    steps_per_epoch = 390, validation_steps = 78
                     )
 
     np.save(f'{name}_history.npy', history.history)
