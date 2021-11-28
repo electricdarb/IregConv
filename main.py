@@ -9,6 +9,8 @@ from IregConv2D import IregConv2D
 import datetime
 import os
 import sys
+import boto3
+from key import KEY_ID, SECRET_KEY
 
 def get_dataset(batch_size, is_training=True):
     split = 'train' if is_training else 'test'
@@ -84,6 +86,18 @@ if __name__ == "__main__":
                     validation_data=test_dataset, callbacks = make_cbs(name),verbose=1,
                     steps_per_epoch = 390, validation_steps = 78
                     )
+    
+    filename = f'{name}_history.npy'
+    np.save(filename, history.history)
 
-    np.save(f'{name}_history.npy', history.history)
+    session = boto3.Session(
+            aws_access_key_id=KEY_ID,
+            aws_secret_access_key=SECRET_KEY)
+
+    s3 = session.resource('s3')
+    bucketname = 'sparse-resnet-bgill'
+    result = s3.Bucket(bucketname).upload_file(os.path.join('./', filename), filename)
+                      
+           
+
 
