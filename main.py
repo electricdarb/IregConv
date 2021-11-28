@@ -26,7 +26,7 @@ def get_dataset(batch_size, is_training=True):
     
 
     dataset = dataset.batch(batch_size)
-    dataset = datatset.repeat()
+    dataset = dataset.repeat()
     return dataset
 
 
