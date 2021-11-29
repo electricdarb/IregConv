@@ -14,6 +14,8 @@ KEY_ID = "hold"
 SECRET_KEY = "hold"
 
 def get_dataset(batch_size, is_training=True):
+    """ gets and returns the Cifar-10 datasetS
+    """
     split = 'train' if is_training else 'test'
     dataset, info = tfds.load(name='cifar10', split=split, with_info=True, as_supervised=True, try_gcs=True,  shuffle_files=True)
     # Normalize the input data
