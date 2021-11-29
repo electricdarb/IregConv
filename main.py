@@ -10,7 +10,8 @@ import datetime
 import os
 import sys
 import boto3
-from key import KEY_ID, SECRET_KEY
+KEY_ID = "hold" 
+SECRET_KEY = "hold"
 
 def get_dataset(batch_size, is_training=True):
     split = 'train' if is_training else 'test'
