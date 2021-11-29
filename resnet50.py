@@ -6,7 +6,8 @@ Conv2D_ = Conv2D
     
 class IdentityBlock(tf.keras.Model):
     def __init__(self, kernel_size, filters, stage, block, Conv2D = Conv2D,
-     reg = tf.keras.regularizers.L2(0.0001)):
+     reg = tf.keras.regularizers.L2(0.0001),
+     wpk = 4):
         """The identity block is the block that has no conv layer at shortcut.
         # Arguments
             input_tensor: input tensor
@@ -37,6 +38,7 @@ class IdentityBlock(tf.keras.Model):
                         padding='same',
                         kernel_initializer='he_normal',
                         name=conv_name_base + '2b', kernel_regularizer=reg) 
+        self.conv2.weights_per_kernel = wpk
         self.bn2 = BatchNormalization(name=bn_name_base + '2b')
 
         self.conv3 = Conv2D_(filters3, (1, 1),
@@ -69,7 +71,7 @@ class ConvBlock(tf.keras.Model):
                 block,
                 strides=(2, 2), 
                 Conv2D = Conv2D,
-                reg = tf.keras.regularizers.L2(0.0001)):
+                reg = tf.keras.regularizers.L2(0.0001), wpk = 4):
         """A block that has a conv layer at shortcut.
         # Arguments
             input_tensor: input tensor
@@ -105,7 +107,8 @@ class ConvBlock(tf.keras.Model):
 
         self.conv2 = Conv2D(filters2, kernel_size, padding='same',
                         kernel_initializer='he_normal',
-                        name=conv_name_base + '2b',  kernel_regularizer=reg)
+                        name=conv_name_base + '2b',  kernel_regularizer=reg) 
+        self.conv2.weights_per_kernel = wpk
         self.bn2 = BatchNormalization(name=bn_name_base + '2b')
 
         self.conv3 = Conv2D_(filters3, (1, 1),

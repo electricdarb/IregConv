@@ -23,12 +23,13 @@ def rand_mask(num_filters, num_channels, weights_per_kernel = 4, dtype = tf.floa
     return tf.cast(mask, dtype)
 
 class IregConv2D(Conv2D):
-    def __init__(self, *args, mask_fn = rand_mask, **kwargs):
+    def __init__(self, *args, mask_fn = rand_mask, weights_per_kernel = 4, **kwargs):
         super(IregConv2D, self).__init__(*args, **kwargs)
         self.mask_fn = mask_fn
-
+        self.wpk = weights_per_kernel
+        
     def build(self, input_shape):
-        self.mask = self.mask_fn(self.filters, input_shape[-1])
+        self.mask = self.mask_fn(self.filters, input_shape[-1], weights_per_kernel = self.wpk)
         super(IregConv2D, self).build(input_shape)
         w = self.get_weights()
         w[0] = tf.multiply(w[0], self.mask)
