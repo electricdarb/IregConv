@@ -12,8 +12,8 @@ import sys
 import boto3
 from shutil import make_archive
 
-KEY_ID = "AKIASPOKG4ZOJL5QIWVJ" 
-SECRET_KEY = "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"
+KEY_ID = "hold" 
+SECRET_KEY = "hold"
 
 def get_dataset(batch_size, is_training=True):
     """ gets and returns the Cifar-10 datasetS
