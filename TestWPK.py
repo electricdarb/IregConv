@@ -28,12 +28,7 @@ def get_dataset(batch_size, is_training=True):
 
     dataset = dataset.map(scale)
 
-    def augmentor(image, label):
-        padded_image = tf.image.pad_to_bounding_box(image, 4, 4, 40, 40)
-        return tf.image.random_crop(padded_image, (32, 32, 3)), label
-
     if is_training:
-        dataset = dataset.map(augmentor)
         dataset = dataset.shuffle(50000)
 
     dataset = dataset.batch(batch_size).cache()
@@ -46,9 +41,9 @@ if __name__ == "__main__":
     max_epochs = 65
     init_lr = .1
 
-    if len(sys.argv) > 1:
+    if len(sys.argv) > 0:
         conv = IregConv2D
-        wpk = int(sys.argv[1])
+        wpk = 3 # int(sys.argv[1])
         name = f'Ireg_wkp_{wpk}'
     else: 
         conv = Conv2D
@@ -82,12 +77,19 @@ if __name__ == "__main__":
     train_dataset = get_dataset(batch_size, is_training=True)
     test_dataset = get_dataset(batch_size, is_training=False)
 
-    model = resnet50.ResNet50([32, 32, 3], 
+    print("conv type", name)
+
+    model_ = resnet50.ResNet50([32, 32, 3], 
                     classes = 10, 
                     reg = regularizers.L2(0.0005),
                     Conv2D=conv, 
                     weights_per_kernel = wpk)
-    print("conv type", name)
+
+    input_tensor = Input(shape = [32, 32, 3],)
+    x = tf.keras.layers.RandomTranslation(.125, .125)(input_tensor)
+    y = model_(x)
+    model = tf.keras.models.Model(inputs=input_tensor, outputs=y, name="ResNet50")
+    
     model.compile(loss='sparse_categorical_crossentropy',
             optimizer=SGD(init_lr, 0.9),
             metrics=['accuracy'],
