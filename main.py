@@ -76,7 +76,7 @@ if __name__ == "__main__":
                     weights_per_kernel = wpk)
 
     input_tensor = Input(shape = [32, 32, 3],)
-    x = tf.keras.layers.RandomTranslation(.125, .125)(input_tensor)
+    x = tf.keras.layers.experimental.preprocessing.RandomTranslation(.125, .125)(input_tensor)
     y = model_(x)
     model = tf.keras.models.Model(inputs=input_tensor, outputs=y, name="ResNet50")
     
