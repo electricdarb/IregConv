@@ -58,11 +58,11 @@ if __name__ == "__main__":
     logdir = os.path.join("logs", name, datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
     def schedule(epoch, lr):
         if epoch < 15:
-            return 0.10
+            return 0.100
         elif epoch < 25:
-            return 0.03
+            return 0.030
         elif epoch < 40:
-            return 0.01
+            return 0.010
         elif epoch < 50:
             return 0.003
         return 0.001
@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
     model = resnet50.ResNet50([32, 32, 3], 
                     classes = 10, 
-                    reg = regularizers.L2(0.0001),
+                    reg = regularizers.L2(0.0005),
                     Conv2D=conv, 
                     weights_per_kernel = wpk)
     print("conv type", name)
