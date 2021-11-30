@@ -40,7 +40,6 @@ def get_dataset(batch_size, is_training=True):
     dataset = dataset.repeat()
     return dataset
 
-
 if __name__ == "__main__":
 
     batch_size = 128
@@ -54,6 +53,7 @@ if __name__ == "__main__":
     else: 
         conv = Conv2D
         name = 'Reg'
+        wpk = None
 
     logdir = os.path.join("logs", name, datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
     def schedule(epoch, lr):
