@@ -26,12 +26,7 @@ def get_dataset(batch_size, is_training=True):
 
     dataset = dataset.map(scale)
 
-    def augmentor(image, label):
-        padded_image = tf.image.pad_to_bounding_box(image, 4, 4, 40, 40)
-        return tf.image.random_crop(padded_image, (32, 32, 3)), label
-
     if is_training:
-        dataset = dataset.map(augmentor)
         dataset = dataset.shuffle(50000)
 
     dataset = dataset.batch(batch_size)
@@ -74,10 +69,17 @@ if __name__ == "__main__":
         conv = Conv2D
         name = 'Reg'
     
-    model = resnet50.ResNet50([32, 32, 3], 
+    model_ = resnet50.ResNet50([32, 32, 3], 
                     classes = 10, 
                     reg = regularizers.L2(0.0001),
-                    Conv2D=conv)
+                    Conv2D=conv, 
+                    weights_per_kernel = wpk)
+
+    input_tensor = Input(shape = [32, 32, 3],)
+    x = tf.keras.layers.RandomTranslation(.125, .125)(input_tensor)
+    y = model_(x)
+    model = tf.keras.models.Model(inputs=input_tensor, outputs=y, name="ResNet50")
+    
     print("conv type", name)
     model.compile(loss='sparse_categorical_crossentropy',
             optimizer=SGD(init_lr, 0.9),
