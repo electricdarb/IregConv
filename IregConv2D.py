@@ -6,7 +6,9 @@ def rand_mask(num_filters, num_channels, weights_per_kernel = 4, dtype = tf.floa
     """
     args:
         num_filters:
-        num_channels
+        num_channels:
+        weights_per_kernel:
+        dtype:
     return:
         mask: a randomly generated mask for sparse conv 
     """
@@ -43,7 +45,7 @@ class IregConv2D(Conv2D):
             tf_padding = self.padding
         
         kernel = tf.multiply(kernel, self.mask)
-
+        
         return tf.nn.convolution(
             inputs,
             kernel,
