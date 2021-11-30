@@ -40,7 +40,6 @@ def get_dataset(batch_size, is_training=True):
 
 
 if __name__ == "__main__":
-
     batch_size = 128
     max_epochs = 164
     init_lr = .1

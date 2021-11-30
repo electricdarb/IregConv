@@ -38,7 +38,7 @@ class IdentityBlock(tf.keras.Model):
                         padding='same',
                         kernel_initializer='he_normal',
                         name=conv_name_base + '2b', kernel_regularizer=reg) 
-        self.conv2.weights_per_kernel = wpk
+        self.conv2.wpk = wpk
         self.bn2 = BatchNormalization(name=bn_name_base + '2b')
 
         self.conv3 = Conv2D_(filters3, (1, 1),
@@ -108,7 +108,7 @@ class ConvBlock(tf.keras.Model):
         self.conv2 = Conv2D(filters2, kernel_size, padding='same',
                         kernel_initializer='he_normal',
                         name=conv_name_base + '2b',  kernel_regularizer=reg) 
-        self.conv2.weights_per_kernel = wpk
+        self.conv2.wpk = wpk
         self.bn2 = BatchNormalization(name=bn_name_base + '2b')
 
         self.conv3 = Conv2D_(filters3, (1, 1),
