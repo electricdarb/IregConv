@@ -40,7 +40,6 @@ def get_dataset(batch_size, is_training=True):
     dataset = dataset.repeat()
     return dataset
 
-
 if __name__ == "__main__":
 
     batch_size = 128
@@ -54,6 +53,7 @@ if __name__ == "__main__":
     else: 
         conv = Conv2D
         name = 'Reg'
+        wpk = None
 
     logdir = os.path.join("logs", name, datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
     def schedule(epoch, lr):
@@ -85,7 +85,8 @@ if __name__ == "__main__":
     model = resnet50.ResNet50([32, 32, 3], 
                     classes = 10, 
                     reg = regularizers.L2(0.0001),
-                    Conv2D=conv)
+                    Conv2D=conv,
+                    weights_per_kernel=wpk)
     print("conv type", name)
     model.compile(loss='sparse_categorical_crossentropy',
             optimizer=SGD(init_lr, 0.9),
