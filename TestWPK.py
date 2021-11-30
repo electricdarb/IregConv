@@ -12,8 +12,8 @@ import sys
 import boto3
 from shutil import make_archive
 
-KEY_ID = "AKIASPOKG4ZOJL5QIWVJ" 
-SECRET_KEY = "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"
+KEY_ID = "hold" 
+SECRET_KEY = "hold"
 
 def get_dataset(batch_size, is_training=True):
     """ gets and returns the Cifar-10 datasetS
@@ -85,8 +85,8 @@ if __name__ == "__main__":
     model = resnet50.ResNet50([32, 32, 3], 
                     classes = 10, 
                     reg = regularizers.L2(0.0001),
-                    Conv2D=conv,
-                    weights_per_kernel=wpk)
+                    Conv2D=conv, 
+                    weights_per_kernel = wpk)
     print("conv type", name)
     model.compile(loss='sparse_categorical_crossentropy',
             optimizer=SGD(init_lr, 0.9),
