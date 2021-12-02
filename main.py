@@ -10,8 +10,8 @@ import datetime
 import os
 import sys
 import boto3
-KEY_ID = "hold" 
-SECRET_KEY = "hold"
+
+from CONFIG import KEY_ID, SECRET_KEY
 
 def get_dataset(batch_size, is_training=True):
     """ gets and returns the Cifar-10 datasetS
