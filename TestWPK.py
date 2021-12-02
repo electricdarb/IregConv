@@ -81,7 +81,7 @@ if __name__ == "__main__":
 
     model_ = resnet50.ResNet50([32, 32, 3], 
                     classes = 10, 
-                    reg = regularizers.L2(0.0005),
+                    reg = regularizers.L2(0.0001),
                     Conv2D=conv, 
                     weights_per_kernel = wpk)
 
