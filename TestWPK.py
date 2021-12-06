@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
     if len(sys.argv) > 0:
         conv = IregConv2D
-        wpk = 3 # int(sys.argv[1])
+        wpk = int(sys.argv[1])
         name = f'Ireg_wkp_{wpk}'
     else: 
         conv = Conv2D
